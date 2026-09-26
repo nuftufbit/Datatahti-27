@@ -22,15 +22,6 @@ int main(){
 
 	kulunut = kulunut + pv;
 
-
-	//cout << ((kk-1)/2) * 61 << (kk > 8 ? " 1 double " : " 0 double ") << (kk % 2 == 1 ? "0 odd" : kk > 9 ? "30" : "31") << "\n";
-
-	//cout << (kk < 3 ? 0 : (vs % 4 == 0 && vs % 100 != 0) || vs % 400 == 0 ? 1 : 2) << "\n";
-
-	//cout << (((kk-1)/2) * 61 + (kk > 8 ? 1 : 0) + (kk % 2 == 1 ? 0 : kk > 9 ? 30 : 31) - 
-	//(kk < 3 ? 0 : (vs % 4 == 0 && vs % 100 != 0) || vs % 400 == 0 ? 1 : 2) + pv) << "\n";
-
-
 	switch (kulunut % 7){
 	case 6:
 		cout << "maanantai";
