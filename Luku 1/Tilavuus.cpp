@@ -1,3 +1,7 @@
+// 14:59
+// 16:05 close, I did find the C++ running stuff here though i think
+// 16:17
+
 #include <iostream>
 #include <iomanip>
 using namespace std;

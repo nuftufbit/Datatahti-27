@@ -1,3 +1,9 @@
+// 16:20 likely
+// 17:23 sub
+// 18:57 close
+// 19:10 off by one
+// 19:14
+
 #include <iostream>
 #include <string>
 using namespace std;

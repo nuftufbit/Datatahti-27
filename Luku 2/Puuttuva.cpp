@@ -1,3 +1,7 @@
+// 19:40 likely
+// 20:28 sub
+// 21:33 done, fiddling with getline shenanigans
+
 #include <iostream>
 #include <vector>
 #include <string>
