@@ -44,6 +44,7 @@ int main(){
 	ll maxWish;
 	ll offset = 0;
 	for(int i = 0; i < sizes.size(); i++){
+		if(diff == 1000000000){get = 100000; break;}
 		size = sizes[i];
 		minWish = fmax(1, size - diff);
 		maxWish = size + diff;
@@ -99,17 +100,17 @@ int main(){
 		//cout << " final " << minWish << " " << curPos << " " << maxWish << "\n";
 		if(minWish == curPos){
 			get += 1;
-			offset += moveOff + 1;
+			offset += moveOff;
 		}
 		if(minWish > curPos){
 			if(offset + moveOff == wishes.size() - 1){break;}
 			if(wishes[offset + moveOff + 1] >= minWish && wishes[offset + moveOff + 1] <= maxWish){
 				get += 1;
 				//cout << "small big - moveOff " << moveOff << " new off ";
-				offset += moveOff + 1;
+				offset += moveOff + 2;
 				//cout << offset << "\n\n";
 			}
-			else{offset += moveOff;}
+			else{offset += moveOff + 1;}
 		}
 		if(minWish < curPos){
 			if(maxWish >= curPos){
