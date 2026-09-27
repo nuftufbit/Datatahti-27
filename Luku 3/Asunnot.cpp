@@ -8,22 +8,10 @@
 #include <algorithm>
 using namespace std;
 
-int srch(int target, int curPlace, int curSize, vector<int> vec){
-	if(vec[curPlace] == target){return curPlace;}
-	if(curSize == 0){
-		return curPlace;
-	}
-	curPlace += vec[curPlace] < target ? curSize / 2 : -curSize/2;
-	//cout << "\n" << curPlace;
-	curPlace = clamp((unsigned long long)curPlace, (unsigned long long)0, (unsigned long long)vec.size() - 1);
-	curSize /= 2;
-	//cout << "\n" << vec[curPlace] << " v - t " << target;
-	//cout << "\n" << curPlace << " - p - s - " << curSize;
-	return srch(target, curPlace, curSize, vec);
-}
 
 int main(){
 	int apl, hs, diff;
+	int get = 0;
 	string allWish;
 	string allSize;
 	cin >> apl >> hs >> diff;
@@ -32,16 +20,12 @@ int main(){
 	stringstream wS(allWish);
 	getline(cin, allSize);
 	stringstream sS(allSize);
-	int get = 0;
 
 
 	vector<int> sizes(hs);
 	vector<int> wishes(apl);
-	vector<bool> used(apl);
 	int size;
 	int wish;
-	int minWish;
-	int maxWish;
 	for(int i = 0; i < apl; i++){
 		wS >> wish;
 		wishes[i] = wish;
@@ -52,39 +36,89 @@ int main(){
 	}
 	sort(wishes.begin(), wishes.end());
 	sort(sizes.begin(), sizes.end());
-	for(int i = 0; i < wishes.size(); i++){
-		//cout << wishes[i] << " ";
-		}
-	//cout << "\n";
 	
+
+	int minWish;
+	int maxWish;
+	int offset = 0;
 	for(int i = 0; i < sizes.size(); i++){
 		size = sizes[i];
-		//cout << size << " new\n";
 		minWish = fmax(1, size - diff);
 		maxWish = size + diff;
 
+
 		if(wishes[0] > maxWish || wishes[wishes.size() - 1] < minWish){continue;}
-
-		int minPlace = srch(minWish, wishes.size() / 2, wishes.size(), wishes);
-		int maxPlace = srch(maxWish, wishes.size() / 2, wishes.size(), wishes);
-		
-		//cout << " min " << minPlace << " max " << maxPlace;
-
-		if(minPlace == maxPlace){
-			if(used[minPlace]){continue;}
-			used[minPlace] = true;
-			get += 1;
+		//cout << "\n" << offset << "\n";
+		if(wishes[offset] == minWish){
+			get += 1; 
+			offset += 1; 
+			//cout << wishes[offset] << " size " << size; 
 			continue;
-		}//|| (wishes[minPlace] < minWish || wishes[minPlace] > maxWish)
+		}
 
-		for(int j = minPlace; j < maxPlace; j++){
-			if(used[j]){continue;}
-			used[j] = true;
-			get += 1;
+		//cout << "\n  new\n";
+		int moveMult = 1;
+		int moveOff = 0;
+		bool att = false;
+		
+		//cout << "\noff " << offset << " move " << moveOff << "\n" << wishes[offset + moveOff] << " min " << minWish << "\nnext " << wishes[offset + moveOff + 1];
+		//cout << "\nmin " << minWish << " ";
+		while(moveMult > 1 || !att){
+			att = true;
+			//cout << "num " << wishes[offset + moveOff];
+			//cout << "\nmult " << moveMult << " off " << moveOff;
+			
+			if(wishes[offset + moveOff] == minWish){break;}
+			
+			if(wishes[offset + moveOff] > minWish){
+				//cout << "\ndown ";
+				if(moveOff == 0){
+					//cout << " broke ";
+					break;}
+				moveMult /= 2;
+				moveOff -= moveMult;
+				break;
+			}
+			else if(wishes[offset + moveOff] < minWish){
+				//cout << "\nup ";
+				if(offset + moveOff == wishes.size() - 1){break;}
+				moveMult *= 2;
+				moveOff += moveMult;
+			}
+
+			if(offset + moveOff > wishes.size() - 1){
+				moveOff = wishes.size() - offset - 1;
+				//cout << "\nmax ";
+				moveMult = 1;
+				att = false;
+			}
 		}
 		
+		int curPos = wishes[offset + moveOff];
+		//cout << " final " << minWish << " " << curPos << " " << maxWish << "\n";
+		if(minWish == curPos){
+			get += 1;
+			offset += moveOff;
+		}
+		if(minWish > curPos){
+			if(offset + moveOff == wishes.size() - 1){break;}
+			if(wishes[offset + moveOff + 1] > minWish && wishes[offset + moveOff + 1] < maxWish){
+				get += 1;
+				cout << "small big - moveOff " << moveOff << " new off ";
+				offset += moveOff + 1;
+				cout << offset << "\n\n";
+			}
+		}
+		if(minWish < curPos){
+			if(maxWish > curPos){
+				cout << "big small - moveOff " << moveOff << " new off ";
+				get += 1;
+				offset += moveOff + 1;
+				cout << offset << "\n\n";
+			}
+		}
+		if(offset >= wishes.size() - 1){break;}
 	}
-	
 	//cout << "\nout\n";
 	cout << get;
 }
