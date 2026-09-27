@@ -10,8 +10,9 @@ using namespace std;
 
 
 int main(){
-	int apl, hs, diff;
-	int get = 0;
+	typedef long long ll;
+	ll apl, hs, diff;
+	ll get = 0;
 	string allWish;
 	string allSize;
 	cin >> apl >> hs >> diff;
@@ -22,10 +23,10 @@ int main(){
 	stringstream sS(allSize);
 
 
-	vector<int> sizes(hs);
-	vector<int> wishes(apl);
-	int size;
-	int wish;
+	vector<ll> sizes(hs);
+	vector<ll> wishes(apl);
+	ll size;
+	ll wish;
 	for(int i = 0; i < apl; i++){
 		wS >> wish;
 		wishes[i] = wish;
@@ -36,12 +37,14 @@ int main(){
 	}
 	sort(wishes.begin(), wishes.end());
 	sort(sizes.begin(), sizes.end());
-	
+	//cout << "\n\n";
 
-	int minWish;
-	int maxWish;
-	int offset = 0;
+
+	ll minWish;
+	ll maxWish;
+	ll offset = 0;
 	for(int i = 0; i < sizes.size(); i++){
+		if(offset >= wishes.size() - 1){break;}
 		size = sizes[i];
 		minWish = fmax(1, size - diff);
 		maxWish = size + diff;
@@ -52,13 +55,13 @@ int main(){
 		if(wishes[offset] == minWish){
 			get += 1; 
 			offset += 1; 
-			//cout << wishes[offset] << " size " << size; 
+			//cout << offset; 
 			continue;
 		}
 
-		//cout << "\n  new\n";
-		int moveMult = 1;
-		int moveOff = 0;
+		//cout << "\n  new i " << i << " num " << wishes[offset] << " size " << size;
+		ll moveMult = 1;
+		ll moveOff = 0;
 		bool att = false;
 		
 		//cout << "\noff " << offset << " move " << moveOff << "\n" << wishes[offset + moveOff] << " min " << minWish << "\nnext " << wishes[offset + moveOff + 1];
@@ -77,7 +80,6 @@ int main(){
 					break;}
 				moveMult /= 2;
 				moveOff -= moveMult;
-				break;
 			}
 			else if(wishes[offset + moveOff] < minWish){
 				//cout << "\nup ";
@@ -94,30 +96,35 @@ int main(){
 			}
 		}
 		
-		int curPos = wishes[offset + moveOff];
+		ll curPos = wishes[offset + moveOff];
 		//cout << " final " << minWish << " " << curPos << " " << maxWish << "\n";
 		if(minWish == curPos){
 			get += 1;
-			offset += moveOff;
+			offset += moveOff + 1;
+			continue;
 		}
 		if(minWish > curPos){
 			if(offset + moveOff == wishes.size() - 1){break;}
-			if(wishes[offset + moveOff + 1] > minWish && wishes[offset + moveOff + 1] < maxWish){
+			if(wishes[offset + moveOff + 1] >= minWish && wishes[offset + moveOff + 1] <= maxWish){
 				get += 1;
-				cout << "small big - moveOff " << moveOff << " new off ";
+				//cout << "small big - moveOff " << moveOff << " new off ";
 				offset += moveOff + 1;
-				cout << offset << "\n\n";
+				//cout << offset << "\n\n";
+				continue;
 			}
+			else{offset += moveOff;}
+			continue;
 		}
 		if(minWish < curPos){
-			if(maxWish > curPos){
-				cout << "big small - moveOff " << moveOff << " new off ";
+			if(maxWish >= curPos){
+				//cout << "big small - moveOff " << moveOff << " new off ";
 				get += 1;
 				offset += moveOff + 1;
-				cout << offset << "\n\n";
+				//cout << offset << "\n\n";
+				continue;
 			}
+			continue;
 		}
-		if(offset >= wishes.size() - 1){break;}
 	}
 	//cout << "\nout\n";
 	cout << get;
