@@ -4,37 +4,23 @@
 
 #include <iostream>
 #include <vector>
+#include <algorithm>
 using namespace std;
 
-bool dfs(int find, int curr, int from, vector<vector<int>>& conns, vector<int>& visited){
-	if(curr == find){
-		visited.push_back(curr);
-		return true;
-	}
-
+void dfsAll(int curr, int curDepth, vector<vector<int>>& conns, vector<int>& order, vector<int>& depth, vector<int> visited){
 	vector<int> curConns = conns[curr];
+	order.push_back(curr);
+	depth.push_back(curDepth);
+	visited[curr] = 1;
 
-	//cout << "conns:\n";
-	//for(int i : curConns){
-	//	cout << i << " ";
-	//}
-	//cout << "\n";
-
-	if(curConns.size() == 1 && from != -1){
-		return false;
+	if(curConns.size() == 1){
+		return;
 	}
-
-	bool foundRight = false;
+	cout << "sllkj";
 	for(int i : curConns){
-		//cout << "num " << i << " - ";
-		if(i == from){continue;}
-		foundRight = dfs(find, i, curr, conns, visited);
-		if(foundRight){break;}
+		if(visited[i] == 1){continue;}
+		dfsAll(i, curDepth + 1, conns, order, depth, visited);
 	}
-	if(foundRight){
-		visited.push_back(curr);
-	}
-	return foundRight;
 }
 
 int main(){
@@ -52,6 +38,7 @@ int main(){
 		connections[one - 1].push_back(two - 1);
 		connections[two - 1].push_back(one - 1);
 	}
+	cout << "gggg";
 
 	//cout << "conns:\n";
 	//for(vector<int> v : connections){
@@ -61,13 +48,39 @@ int main(){
 	//	cout << "\n";
 	//}
 
+	vector<int> order;
+	vector<int> depth;
+	vector<int> visits(stationNum);
+	dfsAll(connections[0][0], 1, connections, order, depth, visits);
+	cout << "fgdjh";
+
 	for(int m = 0; m < trackNum; m++){
 		cin >> one >> two;
-		vector<int> order;
-		bool dfsOut = dfs(two - 1, one - 1, -1, connections, order);
-		if(!dfsOut){continue;}
-		for(int i : order){
-			throughCount[i] += 1;
+		auto pOne = find(order.begin(), order.end(), one);
+		auto pTwo = find(order.begin(), order.end(), two);
+		int onePlace = pOne - order.begin();
+		int twoPlace = pTwo - order.begin();
+		if(onePlace > twoPlace){int temp = twoPlace; twoPlace = onePlace; onePlace = temp;}
+		int min;
+		for(int i = onePlace; i < twoPlace; i++){
+			if(min == 1){break;}
+			if(min > depth[i]){min = depth[i];}
+		}
+		int lastBackPos = onePlace;
+		int lastFrontPos = twoPlace;
+		for(int f = onePlace, b = twoPlace; depth[f] != min && depth[b] != min; f++, b--){
+			if(order[f] == lastBackPos){break;}
+			if(depth[lastFrontPos] > depth[f]){
+				throughCount[order[f]] += 1;
+				lastFrontPos = f;
+			}
+			if(order[b] == lastFrontPos){break;}
+			if(depth[lastBackPos] > depth[b]){
+				throughCount[order[b]] += 1;
+				lastBackPos = b;
+			}
+			throughCount[one] += 1;
+			throughCount[two] += 1;
 		}
 	}
 	for(int i : throughCount){
