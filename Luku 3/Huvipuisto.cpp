@@ -7,7 +7,8 @@
 using namespace std;
 
 int main(){
-	int numChild, maxW, car;
+	int numChild, maxW;
+	int car = 0;
 	string wh;
 	cin >> numChild >> maxW;
 	getline(cin, wh);
@@ -16,7 +17,7 @@ int main(){
 	stringstream wS(wh);
 	int w;
 	int half = maxW/2 + 1;
-	int halfPoint;
+	int halfPoint = 0;
 	bool halfSet = false;
 	vector<int> weights(numChild);
 
@@ -55,16 +56,15 @@ int main(){
 			less--;
 			more++;
 		}
-		
-	}
-	if(halfSet){
-		bool moreEnd = (more >= numChild);
-		//cout << (moreEnd ? " true " : " false ");
-		car += moreEnd && less < 0 ? 0 : moreEnd ? less/2 + 1 : numChild - more + 1;
-	}
-	else{
-		car = numChild / 2 + (numChild % 2 == 0 ? 0 : 1);
 	}
 
+	if(halfSet){
+		bool moreEnd = more >= numChild;
+		//cout << (moreEnd ? " true " : " false ");
+		car += moreEnd && less < 0 ? 0 : moreEnd ? less/2 + 1 : numChild - more + (freePair ? 1 : 0);
+	}
+	else{
+		car = (numChild / 2) + ((numChild % 2) ? 1 : 0);
+	}
 	cout << car;
 }
