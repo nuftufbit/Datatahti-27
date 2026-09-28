@@ -4,7 +4,7 @@
 #include <vector>
 using namespace std;
 
-bool dfs(int find, int curr, int from, vector<vector<int>> conns, vector<int>& visited){
+bool dfs(int find, int curr, int from, vector<vector<int>>& conns, vector<int>& visited){
 	if(curr == find){
 		visited.push_back(curr);
 		return true;
