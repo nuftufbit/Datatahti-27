@@ -1,5 +1,7 @@
 // 13:56
 // 15:25 dfs figured out?
+// 15:58 timeout on big input sizes
+
 #include <iostream>
 #include <vector>
 using namespace std;
@@ -41,6 +43,7 @@ int main(){
 	vector<int> nodeSizes(stationNum);
 	vector<vector<int>> connections(stationNum);
 	vector<int> throughCount(stationNum);
+	vector<vector<int>> straights(stationNum);
 
 	int one;
 	int two;
