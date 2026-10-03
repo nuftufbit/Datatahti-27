@@ -75,13 +75,11 @@ int main(){
 	bool hasPrev = false;
 	vector<int> breakIndexs;
 	vector<int> backBreaks;
-	vector<int> fullStarts;
 	for(int i = 0; i < target.length(); i++){
 		curWhole += target[i];
 		//cout << "w " << curWhole << "\n";
 
 		if(curWhole == stamp){
-			fullStarts.push_back(i - (stamp.size() - 1));
 			curWhole = "";
 			if(target[i] == stamp[0]){
 				curWhole += target[i];
@@ -102,26 +100,18 @@ int main(){
 	}
 
 	if(breakIndexs[breakIndexs.size() - 1] >= target.size()){breakIndexs.pop_back();}
-	cout << breakIndexs.size() + fullStarts.size() + 1 << "\n";
+	cout << breakIndexs.size() + 1 << "\n";
 	cout << 1 << " ";
-	cout << breakIndexs[breakIndexs.size() - 1] - (stamp.size() - (target.size() - breakIndexs[breakIndexs.size() - 1])) + 1 << " ";
 	
-	for(int i = breakIndexs.size() - 2; i >= 0; i--){
+	for(int i = breakIndexs.size() - 1; i >= 0; i--){
+		if(i == breakIndexs.size() - 1){
+			cout << breakIndexs[breakIndexs.size() - 1] - (stamp.size() - (target.size() - breakIndexs[breakIndexs.size() - 1])) + 1 << " ";
+		}
 		if(target[breakIndexs[i]] == stamp[0]){
+			cout << breakIndexs[i] + 1 << " ";
 			continue;
 		}
 		cout << breakIndexs[i] - (stamp.size() - (breakIndexs[i+1] - breakIndexs[i])) + 1 << " ";
-	}
-
-	for(int i : breakIndexs){
-		if(target[i] != stamp[0] || i == breakIndexs[breakIndexs.size() - 1]){
-			continue;
-		}
-		cout << i + 1 << " ";
-	}
-
-	for(int i : fullStarts){
-		cout << i + 1 << " ";
 	}
 
 	//debug
@@ -131,10 +121,6 @@ int main(){
 	//}
 	//cout << "\nback: ";
 	//for(int i : backBreaks){
-	//	cout << i << " ";
-	//}
-	//cout << "\nfulls: ";
-	//for(int i : fullStarts){
 	//	cout << i << " ";
 	//}
 }
