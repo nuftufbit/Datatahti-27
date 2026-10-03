@@ -1,4 +1,6 @@
 // 13:25
+// 15:04 2 right
+// 16:03 timelimit
 
 #include <iostream>
 #include <sstream>
@@ -10,7 +12,7 @@ using namespace std;
 
 int inverseWeight(vector<bool> visited, vector<int> input){
 	int out = 0;
-	//cout << "\nnew\n";
+	//cout << "\nnew ";
 	for(int i = 0; i < input.size(); i++){
 		//cout << visited[i] ? "1 " : "0 ";
 		if(visited[i]){continue;}
@@ -30,9 +32,9 @@ void perms(int width, int depth, int curWeight, vector<int>& input, set<int>& re
 		}
 		else{
 			res.insert(abs(curWeight - inverseWeight(visited, input)));
-			//cout << "\n" << curWeight;
 		}
 		visited[i] = false;
+		curWeight -= input[i];
 	}
 	return;
 }
@@ -50,7 +52,7 @@ int main(){
 		wS >> weight;
 		weightsVec.push_back(weight);
 	}
-	sort(weightsVec.begin(), weightsVec.end());
+	//sort(weightsVec.begin(), weightsVec.end());
 
 	set<int> whts;
 	for(int w = 0; w < aplNum / 2; w++){
