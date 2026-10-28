@@ -70,11 +70,14 @@ int main(){
 			return 0;
 		}
 	}
+	if(stamp[0] != target[0] || stamp[stamp.size() - 1] != target[target.size() - 1]){
+		cout << "-1 " << temp;
+		return 0;
+	}
  
 	string curWhole = "";
 	bool hasPrev = false;
 	vector<int> breakIndexs;
-	vector<int> backBreaks;
 	vector<int> fullStarts;
 	for(int i = 0; i < target.length(); i++){
 		curWhole += target[i];
@@ -90,7 +93,7 @@ int main(){
 			else{breakIndexs.push_back(i + 1);}
 			continue;
 		}
- 
+
 		if(stamp.find(curWhole) == string_view::npos){
 			curWhole = "";
 			breakIndexs.push_back(i);
@@ -127,10 +130,6 @@ int main(){
 	//debug
 	cout << "\nbreaks: ";
 	for(int i : breakIndexs){
-		cout << i << " ";
-	}
-	cout << "\nback: ";
-	for(int i : backBreaks){
 		cout << i << " ";
 	}
 	cout << "\nfulls: ";
