@@ -19,6 +19,51 @@ vector<set<int>> allShapes(vector<string> board){
 	return outVec;
 }
 
+vector<set<int>> hFlip(vector<set<int>> shape){
+	vector<set<int>> outVec;
+	auto lastP = shape[0].end();
+	lastP--;
+	int offset = *lastP;
+	for(set<int> s : shape){
+		outVec.push_back({});
+		for(int x : s){
+			outVec[outVec.size()-1].insert(offset-x);
+		}
+	}
+	return outVec;
+}
+
+vector<set<int>> vFlip(vector<set<int>> shape){
+	vector<set<int>> outVec;
+	int offset = *shape[shape.size()-1].begin();
+	for(int y = shape.size()-1; y >= 0; y--){
+		outVec.push_back({});
+		for(int x : shape[y]){
+			outVec[shape.size()-1 - y].insert(x-offset);
+		}
+	}
+	return outVec;
+}
+
+vector<set<int>> rotateShape(vector<set<int>> shape){
+	//hFlip: else - big top
+	vector<set<int>> outVec;
+	int x = 0;
+	bool noX = false;
+	do{
+		noX = true;
+		outVec.push_back({});
+		for(int y = shape.size()-1; y >= 0; y--){
+			if(shape[y].size() <= x){continue;}
+			noX = false;
+			outVec[x].insert(shape.size()-1 - y);
+		}
+		x++;
+	}while(!noX);
+	outVec.pop_back();
+	return outVec;
+}
+
 // x should be the first value of a row when initing this, offset should be the same value as x
 bool separateShape(vector<set<int>>& linePos, vector<set<int>>& outVec, int x, int offset, int y = 0, int shapeHeight = 0){
 	if(y >= linePos.size()){return false;}
@@ -55,7 +100,7 @@ int main(){
 
 	vector<set<int>> lineShapes = allShapes(board);
 
-	
+	/*
 	for(set<int> v : lineShapes){
 		cout << "\n[ ";
 		for(int i : v){
@@ -63,8 +108,20 @@ int main(){
 		}
 		cout << "]";
 	}
+	*/
 
 	vector<set<int>> shape;
+	separateShape(lineShapes, shape, *lineShapes[0].begin(), *lineShapes[0].begin());
+	shape = rotateShape(shape);
+	for(set<int> v : shape){
+		cout << "\n[ ";
+		for(int i : v){
+			cout << i << " ";
+		}
+		cout << "]";
+	}
+
+	/*
 	int y = 0;
 	while(y < board.size()){
 		if(!separateShape(lineShapes, shape, *lineShapes[y].begin(), *lineShapes[y].begin(), y)){y += 1;continue;}
@@ -79,12 +136,8 @@ int main(){
 		shape = {};
 	}
 	cout << " done";
+	*/
 		
 
 	vector<vector<vector<vector<int>>>> rotateShapes; //rotateShapes[shape][rotation][tile][offset from top(left)]
 }
-
-/*
-vector<vector<vector<vector<int>>>> rotateShape(){
-
-}*/
