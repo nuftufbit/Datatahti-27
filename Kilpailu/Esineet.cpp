@@ -107,33 +107,12 @@ int main(){
 	
 	vector<set<int>> lineShapes = allShapes(board);
 
-	/*
-	for(set<int> v : lineShapes){
-		cout << "\n[ ";
-		for(int i : v){
-			cout << i << " ";
-		}
-		cout << "]";
-	}
-	*/
-
 	vector<set<int>> shape;
-	vector<set<vector<set<int>>>> shapesVec; //allShapes[shape][rotation][line][x]
+	vector<vector<set<int>>> shapesVec; //allShapes[shape][rotation][line][x]
 	int y = 0;
 	while(y < board.size()){
 		if(!separateShape(lineShapes, shape, *lineShapes[y].begin(), *lineShapes[y].begin(), y)){y += 1;continue;}
-		shapesVec.push_back({});
-		int shapeNum = shapesVec.size()-1;
-		vector<set<int>> rotShape = rotateShape(shape);
-
-		shapesVec[shapeNum].insert(shape);
-		shapesVec[shapeNum].insert(hFlip(shape));
-		shapesVec[shapeNum].insert(vFlip(shape));
-		shapesVec[shapeNum].insert(hFlip(vFlip(shape)));
-		shapesVec[shapeNum].insert(rotShape);
-		shapesVec[shapeNum].insert(hFlip(rotShape));
-		shapesVec[shapeNum].insert(vFlip(rotShape));
-		shapesVec[shapeNum].insert(hFlip(vFlip(rotShape)));
+		shapesVec.push_back(shape);
 		shape = {};
 	}
 
@@ -143,60 +122,23 @@ int main(){
 	bool foundShape = true;
 	y = 0;
 
-	/*
-	for(set<int> s : lineShapes){
-		cout << "[ ";
-		for(int i : s){
-			cout << i << " ";
-		}
-		cout << "]\n";
-	}
-	cout << "************\n";
-	cout << "&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&\n&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&\n&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&\n\n";
-	for(set<vector<set<int>>> svs : shapesVec){
-		cout << "#################################\n#################################\n\n";
-		for(vector<set<int>> vs : svs){
-			cout << "------------------------------\n";
-			for(set<int> s : vs){
-				cout << "[ ";
-				for(int i : s){
-					cout << i << " ";
-				}
-				cout << "]" << "\n";
-			}
-		}
-	}
-	*/
-	
 	for(int x = 0; x < m; x++){
 		line += ".";
 	}
 	for(int y = 0; y < n; y++){
 		board[y] = line;
 	}
+
 	while(y < board.size() || shapesVec.size() != 1){
 		if(!separateShape(lineShapes, shape, *lineShapes[y].begin(), *lineShapes[y].begin(), y)){y += 1;continue;}
-		/*
-		cout << "----------------\n";
-		for(set<int> s : shape){
-			cout << "[ ";
-			for(int i : s){
-				cout << i << " ";
-			}
-			cout << "]\n";
-		}
-		cout << "*******\n";
-		for(set<int> s : lineShapes){
-			cout << "[ ";
-			for(int i : s){
-				cout << i << " ";
-			}
-			cout << "]\n";
-		}
-		*/
+
 		for(auto it = shapesVec.begin(); it != shapesVec.end(); it++){
-			set<vector<set<int>>> rotations = *it;
-			if(rotations.count(shape) == 1){
+			vector<set<int>> sh = *it;
+			vector<set<int>> rotated = rotateShape(sh);
+			if(shape == sh || shape == rotated
+			|| shape == hFlip(sh) || shape == hFlip(rotated)
+			|| shape == vFlip(sh) || shape == vFlip(rotated)
+			|| shape == hFlip(vFlip(sh)) || shape == hFlip(vFlip(rotated))){
 				shapesVec.erase(it);
 				break;
 			}
@@ -204,8 +146,8 @@ int main(){
 		shape = {};
 	}
 
-	for(int y = 0; y < (*next(shapesVec[0].begin(), shapesVec[0].size()-1)).size(); y++){
-		for(int x : (*next(shapesVec[0].begin(), shapesVec[0].size()-1))[y]){
+	for(int y = 0; y < shapesVec[0].size(); y++){
+		for(int x : shapesVec[0][y]){
 			board[y][x] = '#';
 		}
 	}
