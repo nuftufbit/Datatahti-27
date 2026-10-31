@@ -19,6 +19,24 @@ vector<set<int>> allShapes(vector<string> board){
 	return outVec;
 }
 
+// returns size 2 vector where [0] is width of each line, and [1] is positions
+vector<vector<int>> allShapes2(vector<string> board){
+	vector<vector<int>> outVec;
+	for(int i = 0; i < board.size(); i++){
+		outVec.push_back({});
+		int width = 0;
+		for(int j = 0; j < board[0].size(); j++){
+			if(board[i][j] == '.'){continue;}
+			else{ // is '#'
+				outVec[1].push_back(j);
+				width++;
+			}
+		}
+		outVec[0].push_back(width);
+	}
+	return outVec;
+}
+
 vector<set<int>> hFlip(vector<set<int>> shape){
 	vector<set<int>> outVec;
 	auto lastP = shape[0].end();
@@ -86,6 +104,14 @@ bool separateShape(vector<set<int>>& piecePos, vector<set<int>>& outVec, int x, 
 	if(!(y == piecePos.size()-1)){separateShape(piecePos, outVec, x, offset, y+1, shapeHeight+1);}
 
 	return true;
+}
+
+bool separateShape2(vector<vector<int>>& allPiece, vector<vector<int>>& outVec, int searchVal, int valOffset, 
+		int y = 0, int totalPosOff = 0, int shapeHeight = 0){
+	if(y > allPiece[0].size() || allPiece[0][y] == 0){return false;}
+	set<int> row = set<int>(allPiece[1].begin() + totalPosOff - (totalPosOff > 0 ? 1 : 0), 
+				allPiece[1].begin() + totalPosOff + allPiece[0][y] - (totalPosOff > 0 ? 1 : 0));
+	if(row.count(searchVal) == 0){return false;}
 }
 
 vector<string> newBoard(int h){
