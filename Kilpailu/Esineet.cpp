@@ -33,7 +33,7 @@ vector<set<int>> hFlip(vector<set<int>> shape){
 	return outVec;
 }
 
-vector<set<int>> vFlip(vector<set<int>> shape){
+vector<set<int>> vFlip(vector<set<int>>& shape){
 	vector<set<int>> outVec;
 	int offset = *shape[shape.size()-1].begin();
 	for(int y = shape.size()-1; y >= 0; y--){
@@ -45,7 +45,7 @@ vector<set<int>> vFlip(vector<set<int>> shape){
 	return outVec;
 }
 
-vector<set<int>> rotateShape(vector<set<int>> shape){
+vector<set<int>> rotateShape(vector<set<int>>& shape){
 	int max = 0, min = 0, maxWidth = 1;
 	for(set<int> s : shape){
 		max = *prev(s.end(), 1) > max ? *prev(s.end(), 1) : max;
@@ -54,7 +54,7 @@ vector<set<int>> rotateShape(vector<set<int>> shape){
 	}
 	int minRow;
 	for(int y = shape.size()-1; y >= 0; y--){
-		if(shape[y].count(min) == 1){minRow = y;}
+		if(shape[y].count(min) == 1){minRow = y; break;}
 	}
 	vector<set<int>> outVec((max-min)+1);
 	for(int y = 0; y < shape.size(); y++){
@@ -67,23 +67,23 @@ vector<set<int>> rotateShape(vector<set<int>> shape){
 }
 
 // x should be the first value of a row when initing this, offset should be the same value as x
-bool separateShape(vector<set<int>>& linePos, vector<set<int>>& outVec, int x, int offset, int y = 0, int shapeHeight = 0){
-	if(y >= linePos.size()){return false;}
-	if(linePos[y].empty() || linePos[y].count(x) == 0){return false;}
+bool separateShape(vector<set<int>>& piecePos, vector<set<int>>& outVec, int x, int offset, int y = 0, int shapeHeight = 0){
+	if(y >= piecePos.size()){return false;}
+	if(piecePos[y].empty() || piecePos[y].count(x) == 0){return false;}
 	if(outVec.size() < shapeHeight+1){outVec.push_back({});}
 
 	outVec[shapeHeight].insert(x-offset);
-	int begVal = *linePos[y].begin();
-	auto endIt = linePos[y].end();
+	int begVal = *piecePos[y].begin();
+	auto endIt = piecePos[y].end();
 	endIt--;
 	int endVal = *endIt;
-	linePos[y].erase(linePos[y].find(x));
+	piecePos[y].erase(piecePos[y].find(x));
 
-	if(!(x == begVal)){separateShape(linePos, outVec, x-1, offset, y, shapeHeight);}
+	if(!(x == begVal)){separateShape(piecePos, outVec, x-1, offset, y, shapeHeight);}
 
-	if(!(x == endVal)){separateShape(linePos, outVec, x+1, offset, y, shapeHeight);}
+	if(!(x == endVal)){separateShape(piecePos, outVec, x+1, offset, y, shapeHeight);}
 
-	if(!(y == linePos.size()-1)){separateShape(linePos, outVec, x, offset, y+1, shapeHeight+1);}
+	if(!(y == piecePos.size()-1)){separateShape(piecePos, outVec, x, offset, y+1, shapeHeight+1);}
 
 	return true;
 }
@@ -103,25 +103,62 @@ int main(){
 	int n, m;
 	cin >> n >> m;
 	vector<string> board = newBoard(n);
-	vector<vector<vector<int>>> shapes; // shapes[which shape][line][column]
-	
-	vector<set<int>> lineShapes = allShapes(board);
-
-	vector<set<int>> shape;
-	vector<vector<set<int>>> shapesVec; //allShapes[shape][rotation][line][x]
-	int y = 0;
-	while(y < board.size()){
-		if(!separateShape(lineShapes, shape, *lineShapes[y].begin(), *lineShapes[y].begin(), y)){y += 1;continue;}
-		shapesVec.push_back(shape);
-		shape = {};
-	}
+	vector<set<int>> startShapes = allShapes(board);
 
 	board = newBoard(n);
-	lineShapes = allShapes(board);
-	string line = "";
-	bool foundShape = true;
-	y = 0;
+	vector<set<int>> endShapes = allShapes(board);
+	vector<set<int>> constEndShapes = endShapes;
 
+	vector<set<int>> inShape;
+	vector<set<int>> outShape;
+	//vector<vector<set<int>>> shapesVec; //allShapes[shape][line][x]
+
+	bool foundShape = true;
+	int y = 0;
+	while(y < board.size() && foundShape){
+		if(startShapes[0].empty()){
+			startShapes.erase(startShapes.begin());
+			continue;
+		}
+		inShape = {};
+		separateShape(startShapes, inShape, *startShapes[0].begin(), *startShapes[0].begin());
+
+		foundShape = false;
+		while(!foundShape && y < board.size()){
+			if(!separateShape(endShapes, outShape, *endShapes[y].begin(), *endShapes[y].begin(), y)){y++;continue;}
+			vector<set<int>> rotated = rotateShape(inShape);
+			if(outShape == inShape || outShape == rotated
+			|| outShape == hFlip(inShape) || outShape == hFlip(rotated)
+			|| outShape == vFlip(inShape) || outShape == vFlip(rotated)
+			|| outShape == hFlip(vFlip(inShape)) || outShape == hFlip(vFlip(rotated))){
+				foundShape = true;
+			}
+			outShape = {};
+		}
+		endShapes = constEndShapes;
+		y = 0;
+	}
+
+	/*
+	while(y < board.size() || shapesVec.size() != 1){
+		if(!separateShape(startShapes, inShape, *startShapes[y].begin(), *startShapes[y].begin(), y)){y++;continue;}
+
+		for(auto it = shapesVec.begin(); it != shapesVec.end(); it++){
+			vector<set<int>> sh = *it;
+			vector<set<int>> rotated = rotateShape(sh);
+			if(inShape == sh || inShape == rotated
+			|| inShape == hFlip(sh) || inShape == hFlip(rotated)
+			|| inShape == vFlip(sh) || inShape == vFlip(rotated)
+			|| inShape == hFlip(vFlip(sh)) || inShape == hFlip(vFlip(rotated))){
+				shapesVec.erase(it);
+				break;
+			}
+		}
+		inShape = {};
+	}
+	*/
+
+	string line = "";
 	for(int x = 0; x < m; x++){
 		line += ".";
 	}
@@ -129,29 +166,11 @@ int main(){
 		board[y] = line;
 	}
 
-	while(y < board.size() || shapesVec.size() != 1){
-		if(!separateShape(lineShapes, shape, *lineShapes[y].begin(), *lineShapes[y].begin(), y)){y += 1;continue;}
-
-		for(auto it = shapesVec.begin(); it != shapesVec.end(); it++){
-			vector<set<int>> sh = *it;
-			vector<set<int>> rotated = rotateShape(sh);
-			if(shape == sh || shape == rotated
-			|| shape == hFlip(sh) || shape == hFlip(rotated)
-			|| shape == vFlip(sh) || shape == vFlip(rotated)
-			|| shape == hFlip(vFlip(sh)) || shape == hFlip(vFlip(rotated))){
-				shapesVec.erase(it);
-				break;
-			}
-		}
-		shape = {};
-	}
-
-	for(int y = 0; y < shapesVec[0].size(); y++){
-		for(int x : shapesVec[0][y]){
+	for(int y = 0; y < inShape.size(); y++){
+		for(int x : inShape[y]){
 			board[y][x] = '#';
 		}
 	}
-
 	for(string s : board){
 		cout << s << "\n";
 	}
